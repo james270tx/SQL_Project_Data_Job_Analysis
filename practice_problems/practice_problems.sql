@@ -64,8 +64,74 @@ SELECT
     job_via AS job_posted_site,
     job_posted_date,
     salary_year_avg AS avg_yearly_salary
-FROM job_postings_fact
-LIMIT 10;
+FROM job_postings_fact;
+
+
+
+/*
+
+Look for any non-senior data or business analyst roles. Only get job titles that include either 'Data' or 'Business'. Also include those with 'Analyst' in any part of the title. Don't include any jobs with 'Senior' followed by any character in the title.  Get the job title, location, and average yearly salary.
+
+*/
+
+SELECT 
+    job_title,
+    job_location,
+    salary_year_avg
+FROM
+    job_postings_fact
+WHERE 
+    (job_title LIKE '%Data%' OR job_title LIKE '%Business%') AND 
+    job_title LIKE '%Analyst%'
+    AND job_title NOT LIKE '%Senior%';
+
+
+
+/*
+
+In the job_postings_fact table calculate the total sum of the salary_year_avg for all job postings that are marked as fully remote (job_work_from_home = TRUE) and divide it by the total count of salary_year_avg to get the total average yearly salary for all jobs that are fully remote. Ensure to only count jobs where the salary is specified, in other words salary_year_avg is not NULL.
+
+*/
+
+SELECT 
+    SUM(salary_year_avg) AS salary_sum,
+    COUNT(job_work_from_home) AS remote_count,
+    SUM(salary_year_avg) / COUNT(job_work_from_home) as remote_salary_avg
+FROM
+    job_postings_fact
+WHERE 
+    job_work_from_home IS TRUE AND salary_year_avg IS NOT NULL;
+
+
+
+/*
+
+In the job_postings_fact table count the total number of job offering that offer health insurance. Use job_health_insurance column to determine if a job offering includes health insurance.
+
+*/
+
+SELECT
+    COUNT(job_id)
+FROM
+    job_postings_fact
+WHERE
+    job_health_insurance IS TRUE;
+
+
+
+/*
+
+In the job_postings_fact table count the number of postings available for each country. Use the job_country column to group the number of postings and count the total number of job postings (job_id) within each country group.
+
+*/
+
+SELECT 
+    job_country,
+    COUNT(job_id)
+FROM
+    job_postings_fact
+GROUP BY
+    job_country;
 
 
 
