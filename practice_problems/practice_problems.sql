@@ -167,6 +167,59 @@ ORDER BY month;
 
 
 
+/*
+
+We're going to check all skills that do not have a category assigned to it. This can be used for validating data. Get all skills from the skills_dim table that do not have a classification assigned to them. Return the skills_id and skills
+
+*/
+
+SELECT
+    skill_id,
+    skills
+FROM
+    skills_dim
+WHERE
+    type IS NULL;
+
+
+
+/*
+
+Identify all jobs that have neither an annual average salary (salary_year_avg) nor an hourly average salary (salary_hour_avg) in the job_postings_fact table. Return the job_id, job_title, salary_year_avg, salary_hour_avg. This can be useful to look at postings where there is no compensation. 
+
+*/
+
+SELECT
+    job_id,
+    job_title,
+    salary_year_avg,
+    salary_hour_avg
+FROM
+    job_postings_fact
+WHERE
+    salary_year_avg IS NULL AND
+    salary_hour_avg IS NULL;
+
+
+
+/*
+
+Retrieve the list of job_titles and the corresponding company names (name) for all job postings the mention "Data Scientist" in the job title. Use the job_postings_fact and company_dim tables for this query.
+
+*/
+
+
+
+
+/*
+
+Fetch all job postings including their job titles (job_title) and the names of the skills required (skills) even if no skills are listed for a job. Ensure the job is listed in New York and that Health Insurance is offered. Use job_postings_fact, skills_jobs_dim, and skills_dim tables. 
+
+*/
+
+
+
+
 /* 
 
 Write a query to find companies (include company name) that have posted jobs offering health insurance, where these postings were made in the 2nd quarter of 2023. Use date extraction to filter by quarter.
