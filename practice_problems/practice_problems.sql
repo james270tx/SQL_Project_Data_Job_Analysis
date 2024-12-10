@@ -175,7 +175,8 @@ We're going to check all skills that do not have a category assigned to it. This
 
 SELECT
     skill_id,
-    skills
+    skills,
+    type
 FROM
     skills_dim
 WHERE
@@ -197,8 +198,7 @@ SELECT
 FROM
     job_postings_fact
 WHERE
-    salary_year_avg IS NULL AND
-    salary_hour_avg IS NULL;
+    salary_year_avg IS NULL AND salary_hour_avg IS NULL;
 
 
 
@@ -208,6 +208,21 @@ Retrieve the list of job_titles and the corresponding company names (name) for a
 
 */
 
+SELECT
+    job_postings_fact.job_title,
+    company_dim.name
+FROM job_postings_fact 
+LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
+WHERE
+    job_postings_fact.job_title LIKE '%Data Scientist%';
+
+SELECT
+    job_postings.job_title AS title,
+    companies.name AS company
+FROM job_postings_fact AS job_postings
+LEFT JOIN company_dim AS companies ON job_postings.company_id = companies.company_id
+WHERE
+    job_postings.job_title LIKE '%Data Scientist%';
 
 
 
@@ -217,6 +232,22 @@ Fetch all job postings including their job titles (job_title) and the names of t
 
 */
 
+SELECT
+    job_postings_fact.job_title,
+    job_postings_fact.job_location,
+    job_postings_fact.job_health_insurance,
+--    job_postings_fact.job_id,
+--    skills_job_dim.job_id,
+--    skills_job_dim.skill_id,
+--    skills_dim.skill_id,
+    skills_dim.skills
+--    skills_dim.type
+FROM job_postings_fact
+LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE
+    job_health_insurance IS TRUE AND job_location = 'New York'
+LIMIT 100;
 
 
 
@@ -227,13 +258,16 @@ Write a query to find companies (include company name) that have posted jobs off
 */
 
 SELECT 
-    company_id,
-    job_health_insurance,
+    job_postings_fact.company_id,
+    job_postings_fact.job_health_insurance,
     EXTRACT (QUARTER FROM job_posted_date) AS quarter,
-    EXTRACT (YEAR FROM job_posted_date) AS year
+    EXTRACT (YEAR FROM job_posted_date) AS year,
+    company_dim.name
 FROM job_postings_fact
+LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
 WHERE 
     job_health_insurance IS TRUE
     AND EXTRACT(QUARTER FROM job_posted_date) = '2'
     AND EXTRACT (YEAR FROM job_posted_date) = '2023';
+
 
