@@ -271,3 +271,35 @@ WHERE
     AND EXTRACT (YEAR FROM job_posted_date) = '2023';
 
 
+
+/*
+
+I want to categorize the salaries from each job posting to see if fits my desired range.
+
+Put salary into diffent buckets
+Decide what is desired, high, or low salary with our own conditions
+Why? Its easy to decide which salaries are worth looking at based on salary
+Bucketing is a common practice in data analysis when viewing categories
+I only want to look at Data Anaylst roles
+Order from highest to lowest
+
+*/
+
+SELECT
+    job_title,
+    job_title_short,
+    salary_year_avg,
+    CASE
+        WHEN salary_year_avg > 100000 THEN 'High'
+        WHEN salary_year_avg < 60000 THEN 'Low'
+        ELSE 'Desired'
+    END AS salary_range
+FROM
+    job_postings_fact
+WHERE 
+    job_title_short = 'Data Analyst' AND salary_year_avg IS NOT NULL
+ORDER BY
+    salary_year_avg DESC;
+
+
+

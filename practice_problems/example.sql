@@ -232,3 +232,130 @@ HAVING
     AVG(job_postings.salary_year_avg) IS NOT NULL
 ORDER BY
     average_salary_for_skill DESC;
+
+
+
+/*
+
+Create tables from other tables
+
+Create 3 tables 
+
+Jan 2023 jobs
+Feb 2023 jobs
+Mar 2023 jobs
+
+Hint: use CREATE TABLE table_name AS syntax to create your table
+Look at a way to filter out only specific months, EXTRACT
+
+*/
+
+-- January
+CREATE TABLE january_jobs AS
+    SELECT * 
+    FROM job_postings_fact
+    WHERE EXTRACT(MONTH FROM job_posted_date) = 1
+
+-- February
+CREATE TABLE february_jobs AS
+    SELECT * 
+    FROM job_postings_fact
+    WHERE EXTRACT(MONTH FROM job_posted_date) = 2
+    
+-- March
+CREATE TABLE march_jobs AS
+    SELECT * 
+    FROM job_postings_fact
+    WHERE EXTRACT(MONTH FROM job_posted_date) = 3
+
+SELECT job_posted_date
+FROM march_jobs
+
+
+
+-- Example SQL query using CASE statement
+SELECT
+    CASE
+        WHEN column_name = 'Value1' THEN 'Description for Value1'
+        WHEN column_name = 'Value2' THEN 'Description for Value2'
+        ELSE 'other'
+    END AS column_description
+FROM 
+    table_name;
+
+
+
+/*
+
+Label new colums as follows
+    'Anywhere' jobs as 'Remote'
+    'New York, NY' jobs as 'Local'
+    Otherwise 'Onsite'
+
+*/
+
+SELECT
+    COUNT(job_id) AS number_of_jobs,
+    -- job_title_short,
+    -- job_location,
+    CASE
+        WHEN job_location = 'Anywhere' THEN 'Remote'
+        WHEN job_location = 'New York, NY' THEN 'Local'
+        ELSE 'Onsite'
+    END AS location_category
+FROM
+    job_postings_fact
+WHERE
+    job_title_short = 'Data Analyst'
+GROUP BY
+    location_category;
+
+
+
+-- Subquery example
+-- Subquerys are nested querys and can be used in SELECT, FROM, and WHERE clauses
+-- Subquerys are executed first and the results are passed to the outside query
+-- It is used when you want to perform a query before the main query can perform its calculation
+
+FROM (
+    SELECT * 
+    FROM job_postings_fact
+    WHERE EXTRACT(MONTH from job_posted_date) = 1
+) AS january_jobs;
+
+
+
+-- Common Table Expressions define a temporary result set you can reference
+-- Can reference within a SELECT, INSERT, UPDATE, or DELETE statement
+-- Defined with WITH
+
+WITH january_jobs AS (
+    SELECT * 
+    FROM job_postings_fact
+    WHERE EXTRACT(MONTH FROM job_posted_date) = 1
+)
+
+SELECT * 
+FROM january_jobs;
+
+
+
+/*
+
+In this example we are looking for a list of companies that are hiring for jobs that don't require a degree
+
+*/
+
+SELECT 
+    company_id,
+    name AS company_name
+FROM 
+    company_dim 
+WHERE company_id IN (
+    SELECT 
+        company_id
+    FROM
+        job_postings_fact
+    WHERE
+        job_no_degree_mention = TRUE 
+)
