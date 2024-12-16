@@ -290,8 +290,8 @@ SELECT
     job_title_short,
     salary_year_avg,
     CASE
-        WHEN salary_year_avg > 100000 THEN 'High'
-        WHEN salary_year_avg < 60000 THEN 'Low'
+        WHEN salary_year_avg > 90000 THEN 'High'
+        WHEN salary_year_avg < 80000 THEN 'Low'
         ELSE 'Desired'
     END AS salary_range
 FROM
@@ -303,3 +303,17 @@ ORDER BY
 
 
 
+/*
+
+Identify the topp 5 skills that are most frequently mentioned in job postings. Use a subquery to find skill id's with the highest count skills_job_dim table and then join this result with skills_dim table to get the skill names
+
+*/
+
+
+
+
+/*
+
+Determine the size category (small, medium, or large) for each company by first identifying the number of job postings they have. Use a subquery to determine the total job postings per company. A company is consider small if it has less than 10 postings, medium if the job postings is between 10 and 50, and large if the count is greater than 50. Implement a subquery to aggregate job counts per company before classifying them based on size. 
+
+*/
