@@ -309,6 +309,24 @@ Identify the topp 5 skills that are most frequently mentioned in job postings. U
 
 */
 
+SELECT 
+    top_skills.skill_id,
+    skills_dim.skills,
+    top_skills.skill_count
+FROM (
+    SELECT 
+        skill_id,
+        COUNT(*) AS skill_count
+    FROM 
+        skills_job_dim
+    GROUP BY
+        skill_id
+    ORDER BY
+        skill_count DESC
+    LIMIT 5
+) as top_skills
+
+LEFT JOIN skills_dim ON top_skills.skill_id = skills_dim.skill_id;
 
 
 
@@ -317,3 +335,26 @@ Identify the topp 5 skills that are most frequently mentioned in job postings. U
 Determine the size category (small, medium, or large) for each company by first identifying the number of job postings they have. Use a subquery to determine the total job postings per company. A company is consider small if it has less than 10 postings, medium if the job postings is between 10 and 50, and large if the count is greater than 50. Implement a subquery to aggregate job counts per company before classifying them based on size. 
 
 */
+
+SELECT 
+    job_count.company_id,
+    company_dim.name,
+    job_count.count,
+    CASE
+        WHEN job_count.count < 10 THEN 'Small'
+        WHEN job_count.count > 50 THEN 'Large'
+        ELSE 'Medium'
+    END AS company_size
+FROM (
+    SELECT 
+        company_id,
+        COUNT(*) 
+    FROM job_postings_fact
+    GROUP BY company_id
+) AS job_count
+
+LEFT JOIN company_dim ON job_count.company_id = company_dim.company_id
+
+
+
+
