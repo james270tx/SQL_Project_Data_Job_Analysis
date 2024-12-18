@@ -357,4 +357,36 @@ LEFT JOIN company_dim ON job_count.company_id = company_dim.company_id
 
 
 
+/*
 
+Get the corresponding skill and job type for each posting in Q1
+Include those without any skills
+Why?  Look at the skills and the type for each job in the first quarter that has a salary > 70000
+
+*/
+
+SELECT 
+    job_postings_fact.job_posted_date,
+    job_postings_fact.job_title_short,
+    job_postings_fact.salary_year_avg,
+    skills_dim.skills
+FROM
+    job_postings_fact
+LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE salary_year_avg > 70000 AND skills_job_dim.skill_id IS NULL AND EXTRACT (QUARTER FROM job_posted_date) = 1
+
+UNION ALL
+
+SELECT 
+    job_postings_fact.job_posted_date,
+    job_postings_fact.job_title_short,
+    job_postings_fact.salary_year_avg,
+    skills_dim.skills
+FROM
+    job_postings_fact
+LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE salary_year_avg > 70000 AND skills_job_dim.skill_id IS NOT NULL AND EXTRACT (QUARTER FROM job_posted_date) = 1
+
+ORDER BY salary_year_avg DESC
